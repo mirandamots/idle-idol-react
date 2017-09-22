@@ -47,7 +47,7 @@ class Sidebar extends React.Component {
    }
  }
 
-class Location extends React.Component {
+class LocationContainer extends React.Component {
    renderAction(action) {
      return (
        <Action readyText={action} />
@@ -56,7 +56,7 @@ class Location extends React.Component {
 
    render() {
      return (
-       <Col className="location" lg={10} md={10}>
+       <Col className="location-container" lg={10} md={10}>
          <Row className="location-header">
            Home
          </Row>
@@ -84,9 +84,9 @@ class Content extends React.Component {
     );
   }
 
-  renderLocation() {
+  renderLocationContainer() {
     return (
-      <Location />
+      <LocationContainer />
     )
   }
 
@@ -94,7 +94,7 @@ class Content extends React.Component {
     return (
      <Row className="content">
        {this.renderSidebar()}
-       {this.renderLocation()}
+       {this.renderLocationContainer()}
      </Row>
    );
  }
