@@ -9,7 +9,11 @@ changes reflect automatically, others require a refresh. If you add a new
 module, make sure to use `npm install --save-dev module` to do it so it'll be
 added to the build json. (Also, you'll need to run `npm start` again to rebuild.)
 
+Branching would be a cool thing to do. I'll see about setting up a develop
+branch and doing all my features in branches. Ideally, this will be the last
+commit straight to master.
 
+## okay anyway here's the rest of it
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
