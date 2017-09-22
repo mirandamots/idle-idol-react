@@ -29,15 +29,57 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
    }
  }
 
+class Content extends React.Component {
+  renderAction(action) {
+    return (
+      <Action readyText={action} />
+    );
+  }
+
+  render() {
+    return (
+     <Row className="content">
+       <Col className="sidebar" lg={2} md={2}>
+         <ButtonGroup vertical block>
+           <Button className="menu-button" bsStyle="primary" block>Home</Button>
+           <Button className="menu-button" block>Downtown</Button>
+           <Button className="menu-button" block>Talent Agency</Button>
+           <Button className="menu-button" block>Studio</Button>
+           <Button className="menu-button" block>Manager Profile</Button>
+           <Button className="menu-button" block>Idolpedia</Button>
+         </ButtonGroup>
+       </Col>
+       <Col className="location" lg={10} md={10}>
+         <Row className="location-header">
+           Home
+         </Row>
+         <Row className="location-content">
+           <Col className="actions" lg={5} md={5}>
+             <ButtonGroup vertical block>
+               {this.renderAction("Work")}
+               {this.renderAction("Buy clothes online")}
+               {this.renderAction("Research idols")}
+             </ButtonGroup>
+           </Col>
+           <Col className="log" lg={5} md={5}>
+             You arrived at home.
+           </Col>
+         </Row>
+       </Col>
+     </Row>
+   );
+ }
+}
+
  /*
   * A main class, more or less. The goal right now is to break down the horrific
   * render function into smaller classes.
   */
 
 class Screen extends React.Component {
-  renderAction(action) {
+  renderContent() {
     return (
-      <Action readyText={action} />
+      <Content />
     );
   }
 
@@ -47,35 +89,7 @@ class Screen extends React.Component {
         <Row className="game-header">
           IDLE &#9734; IDOL
         </Row>
-        <Row className="content">
-          <Col className="sidebar" lg={2} md={2}>
-            <ButtonGroup vertical block>
-              <Button className="menu-button" bsStyle="primary" block>Home</Button>
-              <Button className="menu-button" block>Downtown</Button>
-              <Button className="menu-button" block>Talent Agency</Button>
-              <Button className="menu-button" block>Studio</Button>
-              <Button className="menu-button" block>Manager Profile</Button>
-              <Button className="menu-button" block>Idolpedia</Button>
-            </ButtonGroup>
-          </Col>
-          <Col className="location" lg={10} md={10}>
-            <Row className="location-header">
-              Home
-            </Row>
-            <Row className="location-content">
-              <Col className="actions" lg={5} md={5}>
-                <ButtonGroup vertical block>
-                  {this.renderAction("Work")}
-                  {this.renderAction("Buy clothes online")}
-                  {this.renderAction("Research idols")}
-                </ButtonGroup>
-              </Col>
-              <Col className="log" lg={5} md={5}>
-                You arrived at home.
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+        {this.renderContent()}
       </Grid>
     );
   }
