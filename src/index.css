@@ -1,0 +1,36 @@
+body {
+  font: 14px "Century Gothic", Futura, sans-serif;
+  margin: 20px;
+}
+
+ol, ul {
+
+}
+
+.game-header {
+  font-size: 48px;
+  padding-bottom: 25px;
+  text-align: center;
+}
+
+.sidebar {
+
+}
+
+.menu-button {
+  font-size: 20px;
+  padding: 5px;
+}
+
+.location-header {
+  font-size: 36px;
+  padding-left: 10px;
+}
+
+.actions {
+  padding: 10px;
+}
+
+.log {
+  padding: 10px;
+}
