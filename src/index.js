@@ -29,16 +29,10 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
    }
  }
 
-class Content extends React.Component {
-  renderAction(action) {
-    return (
-      <Action readyText={action} />
-    );
-  }
+ class Sidebar extends React.Component {
 
-  render() {
-    return (
-     <Row className="content">
+   render() {
+     return (
        <Col className="sidebar" lg={2} md={2}>
          <ButtonGroup vertical block>
            <Button className="menu-button" bsStyle="primary" block>Home</Button>
@@ -49,6 +43,27 @@ class Content extends React.Component {
            <Button className="menu-button" block>Idolpedia</Button>
          </ButtonGroup>
        </Col>
+     );
+   }
+ }
+
+class Content extends React.Component {
+  renderAction(action) {
+    return (
+      <Action readyText={action} />
+    );
+  }
+
+  renderSidebar() {
+    return (
+      <Sidebar />
+    );
+  }
+
+  render() {
+    return (
+     <Row className="content">
+       {this.renderSidebar()}
        <Col className="location" lg={10} md={10}>
          <Row className="location-header">
            Home
