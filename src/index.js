@@ -47,7 +47,7 @@ class Sidebar extends React.Component {
    }
  }
 
-class LocationContainer extends React.Component {
+class Location extends React.Component {
    renderAction(action) {
      return (
        <Action readyText={action} />
@@ -56,12 +56,12 @@ class LocationContainer extends React.Component {
 
    render() {
      return (
-       <Col className="location-container" lg={10} md={10}>
+       <Col className="location" lg={10} md={10}>
          <Row className="location-header">
            Home
          </Row>
          <Row className="location-content">
-           <Col className="actions" lg={5} md={5}>
+           <Col className="action-list" lg={5} md={5}>
              <ButtonGroup vertical block>
                {this.renderAction("Work")}
                {this.renderAction("Buy clothes online")}
@@ -77,24 +77,24 @@ class LocationContainer extends React.Component {
    }
 }
 
-class Content extends React.Component {
+class GameContainer extends React.Component {
   renderSidebar() {
     return (
       <Sidebar />
     );
   }
 
-  renderLocationContainer() {
+  renderLocation() {
     return (
-      <LocationContainer />
+      <Location />
     )
   }
 
   render() {
     return (
-     <Row className="content">
+     <Row className="game-container">
        {this.renderSidebar()}
-       {this.renderLocationContainer()}
+       {this.renderLocation()}
      </Row>
    );
  }
@@ -105,10 +105,10 @@ class Content extends React.Component {
   * render function into smaller classes.
   */
 
-class Screen extends React.Component {
-  renderContent() {
+class Game extends React.Component {
+  renderGameContainer() {
     return (
-      <Content />
+      <GameContainer />
     );
   }
 
@@ -118,7 +118,7 @@ class Screen extends React.Component {
         <Row className="game-header">
           IDLE &#9734; IDOL
         </Row>
-        {this.renderContent()}
+        {this.renderGameContainer()}
       </Grid>
     );
   }
@@ -127,6 +127,6 @@ class Screen extends React.Component {
 // ========================================
 
 ReactDOM.render(
-  <Screen />,
+  <Game />,
   document.getElementById('root')
 );
