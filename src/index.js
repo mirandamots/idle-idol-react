@@ -29,7 +29,7 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
    }
  }
 
- class Sidebar extends React.Component {
+class Sidebar extends React.Component {
 
    render() {
      return (
@@ -47,23 +47,15 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
    }
  }
 
-class Content extends React.Component {
-  renderAction(action) {
-    return (
-      <Action readyText={action} />
-    );
-  }
+class Location extends React.Component {
+   renderAction(action) {
+     return (
+       <Action readyText={action} />
+     );
+   }
 
-  renderSidebar() {
-    return (
-      <Sidebar />
-    );
-  }
-
-  render() {
-    return (
-     <Row className="content">
-       {this.renderSidebar()}
+   render() {
+     return (
        <Col className="location" lg={10} md={10}>
          <Row className="location-header">
            Home
@@ -81,6 +73,28 @@ class Content extends React.Component {
            </Col>
          </Row>
        </Col>
+     )
+   }
+}
+
+class Content extends React.Component {
+  renderSidebar() {
+    return (
+      <Sidebar />
+    );
+  }
+
+  renderLocation() {
+    return (
+      <Location />
+    )
+  }
+
+  render() {
+    return (
+     <Row className="content">
+       {this.renderSidebar()}
+       {this.renderLocation()}
      </Row>
    );
  }
