@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import './actions.json';
 
 import Grid from 'react-bootstrap/lib/Grid';
 import Row from 'react-bootstrap/lib/Row';
@@ -44,7 +45,8 @@ class Game extends React.Component {
     this.state = {
       money: 0,
       starPoints: 0,
-      currentLocation: 'home'
+      currentLocation: 'home',
+      actions: require('./actions.json')
     };
   }
 
@@ -60,13 +62,10 @@ class Game extends React.Component {
   }
 
   // Lifting state up so Actions will affect things like money and SP.
-  renderLocation() {
+  renderLocation(location) {
     return (
-      <Location value = {
-        this.state.money,
-        this.state.starPoints,
-        this.state.currentLocation
-      } handleClick={() => this.handleClick()} />
+      <Location name={location} actions={this.state.actions[location]}
+      handleClick={() => this.handleClick()} />
     )
   }
 
@@ -74,7 +73,7 @@ class Game extends React.Component {
     return (
      <Row className="game">
        {this.renderSidebar()}
-       {this.renderLocation()}
+       {this.renderLocation(this.state.currentLocation)}
      </Row>
    );
  }
@@ -104,7 +103,7 @@ class Location extends React.Component {
   // only pass money to "Work").
    renderAction(action) {
      return (
-       <Action readyText={action} onClick={() => this.props.handleClick()} />
+       <Action action={action} onClick={() => this.props.handleClick()} />
      );
    }
 
@@ -117,9 +116,9 @@ class Location extends React.Component {
          <Row className="location-content">
            <Col className="action-list" lg={5} md={5}>
              <ButtonGroup vertical block>
-               {this.renderAction("Work")}
-               {this.renderAction("Buy clothes online")}
-               {this.renderAction("Research idols")}
+             {Object.values(this.props.actions).map((action) =>
+               this.renderAction(action))
+             }
              </ButtonGroup>
            </Col>
            <Col className="log" lg={5} md={5}>
@@ -138,11 +137,13 @@ class Location extends React.Component {
  */
  class Action extends React.Component {
    constructor(props) {
+     console.log(props);
      super(props);
      this.state = {
-       readyText: props.readyText,
-       waitingText: null   // shows when the button is "on cooldown" (e.g. "Working...")
-     }
+       readyText: props.action.ready,
+       waitingText: props.action.cooldown,   // shows when the button is "on cooldown" (e.g. "Working...")
+       effects: props.action.effects
+     };
    }
 
    render() {
