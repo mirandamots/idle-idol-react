@@ -9,25 +9,76 @@ import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 
 /*
- *  An Action is anything that can be done ingame. It renders as a button.
- *  They need to do something eventually...and they need to be prepopulated
- *  from some kind of static list.
+ * Represents the screen. While this is the "overarching" class, it isn't the
+ * main class of the game; it creates Game, which contains all the game
+ * components and variables. This is more for the header, footer, and other
+ * miscellaneous elements.
  */
- class Action extends React.Component {
-   constructor(props) {
-     super(props);
-     this.state = {
-       readyText: props.readyText,
-       waitingText: null   // shows when the button is "on cooldown" (e.g. "Working...")
-     }
-   }
 
-   render() {
-     return (
-       <Button className="action-button" block>{this.state.readyText}</Button>
-     )
-   }
+class Screen extends React.Component {
+ renderGame() {
+   return (
+     <Game />
+   );
  }
+
+ render() {
+   return (
+     <Grid className="screen">
+       <Row className="game-header">
+         IDLE &#9734; IDOL
+       </Row>
+       {this.renderGame()}
+     </Grid>
+   );
+ }
+}
+
+/*
+ * Main class.
+ */
+
+class Game extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      money: 0,
+      starPoints: 0,
+      currentLocation: 'home'
+    };
+  }
+
+  handleClick() {
+    this.money += 100;
+    alert('You made money!');
+  }
+
+  renderSidebar() {
+    return (
+      <Sidebar />
+    );
+  }
+
+  // Lifting state up so Actions will affect things like money and SP.
+  renderLocation() {
+    return (
+      <Location value = {
+        this.state.money,
+        this.state.starPoints,
+        this.state.currentLocation
+      } handleClick={() => this.handleClick()} />
+    )
+  }
+
+  render() {
+    return (
+     <Row className="game">
+       {this.renderSidebar()}
+       {this.renderLocation()}
+     </Row>
+   );
+ }
+}
 
 class Sidebar extends React.Component {
 
@@ -48,9 +99,12 @@ class Sidebar extends React.Component {
  }
 
 class Location extends React.Component {
+
+  // Ideally, we pass only the elements of Game that the Action needs (e.g.
+  // only pass money to "Work").
    renderAction(action) {
      return (
-       <Action readyText={action} />
+       <Action readyText={action} onClick={() => this.props.handleClick()} />
      );
    }
 
@@ -77,56 +131,32 @@ class Location extends React.Component {
    }
 }
 
-class GameContainer extends React.Component {
-  renderSidebar() {
-    return (
-      <Sidebar />
-    );
-  }
+/*
+ *  An Action is anything that can be done ingame. It renders as a button.
+ *  They need to do something eventually...and they need to be prepopulated
+ *  from some kind of static list.
+ */
+ class Action extends React.Component {
+   constructor(props) {
+     super(props);
+     this.state = {
+       readyText: props.readyText,
+       waitingText: null   // shows when the button is "on cooldown" (e.g. "Working...")
+     }
+   }
 
-  renderLocation() {
-    return (
-      <Location />
-    )
-  }
-
-  render() {
-    return (
-     <Row className="game-container">
-       {this.renderSidebar()}
-       {this.renderLocation()}
-     </Row>
-   );
+   render() {
+     return (
+       <Button className="action-button" block onClick={() => this.props.onClick()}>
+          {this.state.readyText}
+       </Button>
+     )
+   }
  }
-}
-
- /*
-  * A main class, more or less. The goal right now is to break down the horrific
-  * render function into smaller classes.
-  */
-
-class Game extends React.Component {
-  renderGameContainer() {
-    return (
-      <GameContainer />
-    );
-  }
-
-  render() {
-    return (
-      <Grid className="screen">
-        <Row className="game-header">
-          IDLE &#9734; IDOL
-        </Row>
-        {this.renderGameContainer()}
-      </Grid>
-    );
-  }
-}
 
 // ========================================
 
 ReactDOM.render(
-  <Game />,
+  <Screen />,
   document.getElementById('root')
 );
