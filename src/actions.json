@@ -1,8 +1,9 @@
 {
   "home": {
     "work": {
-      "ready": "Go to work",
-      "cooldown": "Resting...",
+      "readyText": "Go to work",
+      "waitingText": "Resting...",
+      "cooldown": 5,
       "effects": {
         "money": [80],
         "sp": [0],
@@ -11,8 +12,9 @@
     },
 
     "buyClothes": {
-      "ready": "Buy clothes",
-      "cooldown": "Regretting...",
+      "readyText": "Buy clothes",
+      "waitingText": "Regretting...",
+      "cooldown": 10,
       "effects": {
         "money": [-80, -50, -20],
         "sp": [2, 0, 0],
@@ -25,8 +27,9 @@
     },
 
     "researchIdols": {
-      "ready": "Research idols",
-      "cooldown": "Sighing wistfully...",
+      "readyText": "Research idols",
+      "waitingText": "Sighing wistfully...",
+      "cooldown": 15,
       "effects": {
         "money": [0, 0],
         "sp": [1, 2],

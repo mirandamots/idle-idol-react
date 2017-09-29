@@ -50,9 +50,11 @@ class Game extends React.Component {
     };
   }
 
-  handleClick() {
-    this.money += 100;
-    alert('You made money!');
+  handleClick(effects) {
+    this.setState({
+      money: this.state.money + effects.money[0],
+      starPoints: this.state.starPoints + effects.sp[0]
+    });
   }
 
   renderSidebar() {
@@ -65,16 +67,21 @@ class Game extends React.Component {
   renderLocation(location) {
     return (
       <Location name={location} actions={this.state.actions[location]}
-      handleClick={() => this.handleClick()} />
+      handleClick={(effects) => this.handleClick(effects)} />
     )
   }
 
   render() {
     return (
-     <Row className="game">
-       {this.renderSidebar()}
-       {this.renderLocation(this.state.currentLocation)}
-     </Row>
+     <div>
+       <Row className="stats">
+         Money: {this.state.money}, SP: {this.state.starPoints}
+       </Row>
+       <Row className="game">
+         {this.renderSidebar()}
+         {this.renderLocation(this.state.currentLocation)}
+       </Row>
+     </div>
    );
  }
 }
@@ -103,7 +110,7 @@ class Location extends React.Component {
   // only pass money to "Work").
    renderAction(action) {
      return (
-       <Action action={action} onClick={() => this.props.handleClick()} />
+       <Action action={action} notifyGame={(effects) => this.props.handleClick(effects)} />
      );
    }
 
@@ -137,21 +144,40 @@ class Location extends React.Component {
  */
  class Action extends React.Component {
    constructor(props) {
-     console.log(props);
      super(props);
      this.state = {
-       readyText: props.action.ready,
-       waitingText: props.action.cooldown,   // shows when the button is "on cooldown" (e.g. "Working...")
-       effects: props.action.effects
+       readyText: props.action.readyText,
+       waitingText: props.action.waitingText,   // shows when the button is "on cooldown" (e.g. "Working...")
+       currentText: props.action.readyText,
+       cooldown: props.action.cooldown,
+       effects: props.action.effects,
+       disabled: false
      };
    }
 
    render() {
      return (
-       <Button className="action-button" block onClick={() => this.props.onClick()}>
-          {this.state.readyText}
+       <Button className="action-button" disabled={this.state.disabled} block onClick={() => this.onClick()}>
+          {this.state.currentText}
        </Button>
      )
+   }
+
+   resetButton() {
+     this.setState({
+         currentText: this.state.readyText,
+         disabled: false
+     });
+   }
+
+   onClick() {
+     this.setState({
+         disabled: true,
+         currentText: this.state.waitingText
+     });
+     setTimeout(this.resetButton.bind(this), this.state.cooldown * 1000);
+     console.log(this.state.effects);
+     this.props.notifyGame(this.state.effects);
    }
  }
 
