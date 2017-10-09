@@ -105,13 +105,32 @@ class Sidebar extends React.Component {
  }
 
 class Location extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: this.props.name,
+      actions: this.props.actions,
+      log: ["You arrive at home."]    // TODO very hardcoded
+    }
+  }
 
   // Ideally, we pass only the elements of Game that the Action needs (e.g.
   // only pass money to "Work").
    renderAction(action) {
      return (
-       <Action action={action} notifyGame={(effects) => this.props.handleClick(effects)} />
+       <Action action={action} notifyLocation={(effects) => this.handleClick(effects)} />
      );
+   }
+
+   handleClick(effects) {
+     console.log(effects);
+
+     var newLog = this.state.log;
+     newLog.push(effects.logText[0]);
+
+     this.setState({log: newLog});
+
+     this.props.handleClick(effects);
    }
 
    render() {
@@ -123,13 +142,13 @@ class Location extends React.Component {
          <Row className="location-content">
            <Col className="action-list" lg={5} md={5}>
              <ButtonGroup vertical block>
-             {Object.values(this.props.actions).map((action) =>
+             {Object.values(this.state.actions).map((action) =>
                this.renderAction(action))
              }
              </ButtonGroup>
            </Col>
            <Col className="log" lg={5} md={5}>
-             You arrived at home.
+             {this.state.log.join("\n")}
            </Col>
          </Row>
        </Col>
@@ -177,7 +196,7 @@ class Location extends React.Component {
      });
      setTimeout(this.resetButton.bind(this), this.state.cooldown * 1000);
      console.log(this.state.effects);
-     this.props.notifyGame(this.state.effects);
+     this.props.notifyLocation(this.state.effects);
    }
  }
 
