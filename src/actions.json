@@ -1,0 +1,43 @@
+{
+  "home": {
+    "work": {
+      "readyText": "Go to work",
+      "waitingText": "Resting...",
+      "cooldown": 5,
+      "effects": {
+        "money": [80],
+        "sp": [0],
+        "logText": ["You go to work and make $80."]
+      }
+    },
+
+    "buyClothes": {
+      "readyText": "Buy clothes",
+      "waitingText": "Regretting...",
+      "cooldown": 10,
+      "effects": {
+        "money": [-80, -50, -20],
+        "sp": [2, 0, 0],
+        "logText": [
+          "You found a really stylish dress. It's $80, but you think it might turn some heads...",
+          "You thought that blouse was on sale, but it wasn't. You spent $50.",
+          "You got a great deal on a pair of shoes and only spent $20."
+        ]
+      }
+    },
+
+    "researchIdols": {
+      "readyText": "Research idols",
+      "waitingText": "Sighing wistfully...",
+      "cooldown": 15,
+      "effects": {
+        "money": [0, 0],
+        "sp": [1, 2],
+        "logText": [
+          "Somehow, looking up song lyrics leads to you finding some interesting dirt on a manager.",
+          "You spend an hour looking at Mermaid-Hime's costumes and taking notes on design."
+        ]
+      }
+    }
+  }
+}

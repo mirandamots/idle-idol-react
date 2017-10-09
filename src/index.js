@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import './actions.json';
 
 import Grid from 'react-bootstrap/lib/Grid';
 import Row from 'react-bootstrap/lib/Row';
@@ -9,25 +10,81 @@ import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 
 /*
- *  An Action is anything that can be done ingame. It renders as a button.
- *  They need to do something eventually...and they need to be prepopulated
- *  from some kind of static list.
+ * Represents the screen. While this is the "overarching" class, it isn't the
+ * main class of the game; it creates Game, which contains all the game
+ * components and variables. This is more for the header, footer, and other
+ * miscellaneous elements.
  */
- class Action extends React.Component {
-   constructor(props) {
-     super(props);
-     this.state = {
-       readyText: props.readyText,
-       waitingText: null   // shows when the button is "on cooldown" (e.g. "Working...")
-     }
-   }
 
-   render() {
-     return (
-       <Button className="action-button" block>{this.state.readyText}</Button>
-     )
-   }
+class Screen extends React.Component {
+ renderGame() {
+   return (
+     <Game />
+   );
  }
+
+ render() {
+   return (
+     <Grid className="screen">
+       <Row className="game-header">
+         IDLE &#9734; IDOL
+       </Row>
+       {this.renderGame()}
+     </Grid>
+   );
+ }
+}
+
+/*
+ * Main class.
+ */
+
+class Game extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      money: 0,
+      starPoints: 0,
+      currentLocation: 'home',
+      actions: require('./actions.json')
+    };
+  }
+
+  handleClick(effects) {
+    this.setState({
+      money: this.state.money + effects.money[0],
+      starPoints: this.state.starPoints + effects.sp[0]
+    });
+  }
+
+  renderSidebar() {
+    return (
+      <Sidebar />
+    );
+  }
+
+  // Lifting state up so Actions will affect things like money and SP.
+  renderLocation(location) {
+    return (
+      <Location name={location} actions={this.state.actions[location]}
+      handleClick={(effects) => this.handleClick(effects)} />
+    )
+  }
+
+  render() {
+    return (
+     <div>
+       <Row className="stats">
+         Money: {this.state.money}, SP: {this.state.starPoints}
+       </Row>
+       <Row className="game">
+         {this.renderSidebar()}
+         {this.renderLocation(this.state.currentLocation)}
+       </Row>
+     </div>
+   );
+ }
+}
 
 class Sidebar extends React.Component {
 
@@ -48,10 +105,32 @@ class Sidebar extends React.Component {
  }
 
 class Location extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: this.props.name,
+      actions: this.props.actions,
+      log: ["You arrive at home."]    // TODO very hardcoded
+    }
+  }
+
+  // Ideally, we pass only the elements of Game that the Action needs (e.g.
+  // only pass money to "Work").
    renderAction(action) {
      return (
-       <Action readyText={action} />
+       <Action action={action} notifyLocation={(effects) => this.handleClick(effects)} />
      );
+   }
+
+   handleClick(effects) {
+     console.log(effects);
+
+     var newLog = this.state.log;
+     newLog.push(effects.logText[0]);
+
+     this.setState({log: newLog});
+
+     this.props.handleClick(effects);
    }
 
    render() {
@@ -63,13 +142,13 @@ class Location extends React.Component {
          <Row className="location-content">
            <Col className="action-list" lg={5} md={5}>
              <ButtonGroup vertical block>
-               {this.renderAction("Work")}
-               {this.renderAction("Buy clothes online")}
-               {this.renderAction("Research idols")}
+             {Object.values(this.state.actions).map((action) =>
+               this.renderAction(action))
+             }
              </ButtonGroup>
            </Col>
            <Col className="log" lg={5} md={5}>
-             You arrived at home.
+             {this.state.log.join("\n")}
            </Col>
          </Row>
        </Col>
@@ -77,56 +156,53 @@ class Location extends React.Component {
    }
 }
 
-class GameContainer extends React.Component {
-  renderSidebar() {
-    return (
-      <Sidebar />
-    );
-  }
+/*
+ *  An Action is anything that can be done ingame. It renders as a button.
+ *  They need to do something eventually...and they need to be prepopulated
+ *  from some kind of static list.
+ */
+ class Action extends React.Component {
+   constructor(props) {
+     super(props);
+     this.state = {
+       readyText: props.action.readyText,
+       waitingText: props.action.waitingText,   // shows when the button is "on cooldown" (e.g. "Working...")
+       currentText: props.action.readyText,
+       cooldown: props.action.cooldown,
+       effects: props.action.effects,
+       disabled: false
+     };
+   }
 
-  renderLocation() {
-    return (
-      <Location />
-    )
-  }
+   render() {
+     return (
+       <Button className="action-button" disabled={this.state.disabled} block onClick={() => this.onClick()}>
+          {this.state.currentText}
+       </Button>
+     )
+   }
 
-  render() {
-    return (
-     <Row className="game-container">
-       {this.renderSidebar()}
-       {this.renderLocation()}
-     </Row>
-   );
+   resetButton() {
+     this.setState({
+         currentText: this.state.readyText,
+         disabled: false
+     });
+   }
+
+   onClick() {
+     this.setState({
+         disabled: true,
+         currentText: this.state.waitingText
+     });
+     setTimeout(this.resetButton.bind(this), this.state.cooldown * 1000);
+     console.log(this.state.effects);
+     this.props.notifyLocation(this.state.effects);
+   }
  }
-}
-
- /*
-  * A main class, more or less. The goal right now is to break down the horrific
-  * render function into smaller classes.
-  */
-
-class Game extends React.Component {
-  renderGameContainer() {
-    return (
-      <GameContainer />
-    );
-  }
-
-  render() {
-    return (
-      <Grid className="screen">
-        <Row className="game-header">
-          IDLE &#9734; IDOL
-        </Row>
-        {this.renderGameContainer()}
-      </Grid>
-    );
-  }
-}
 
 // ========================================
 
 ReactDOM.render(
-  <Game />,
+  <Screen />,
   document.getElementById('root')
 );
