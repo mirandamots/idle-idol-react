@@ -36,17 +36,53 @@ class Screen extends React.Component {
 }
 
 /*
+ * We need to keep track of action cooldowns continuously and be able to reload
+ * an action in the middle of a cooldown if we should switch locations. How do
+ * we accomplish this?
+ *
+ * 1. Lift action state to Game, as Game remains consistent between Location
+ *    switches. State would only be the remaining cooldown, since whether the Action
+ *    is disabled or not can be inferred via the remaining cooldown (=== 0).
+ * 2. We need some way to continuously "count down" so we can load the button at
+ *    potentially any cooldown state. A setInterval in Game seems perfect for this.
+ *    Each tick of setInterval, the Game will update all remaining cooldowns.
+ *
+ * Then the flow becomes:
+ * 1. An Action is clicked.
+ * 2. Action's onClick calls Game's handleClick.
+ * 3. One of two things could happen:
+ *    a. Game's handleClick calls a setState immediately to change the remaining
+ *       cooldown.
+ *    b. Game enqueues an update, and a setState in setInterval's function applies
+ *       all queued updates every tick. (The Action still disables immediately.)
+ *    (b) implies some lag, but ensures consistency. It also implies all actions
+ *    should be going through the interval function, so we need to handle that,
+ *    too...
+ */
+
+/*
  * Main class.
  */
 
 class Game extends React.Component {
   constructor() {
     super();
+
+    var lastClicked = { }
+
+    for(var loc in LOCATIONS) {
+      for(var action in LOCATIONS[loc]["actions"]) {
+        lastClicked[action] = new Date(0); // infinity ago
+      }
+    }
+
+    console.log(lastClicked);
+
     this.state = {
       money: 0,
       starPoints: 0,
-      currentLocation: 'home',
-      actions: require('./actions.json')
+      currentLocation: 'Home',
+      lastClicked: lastClicked
     };
   }
 
@@ -172,6 +208,12 @@ class Location extends React.Component {
        effects: props.action.effects,
        disabled: false
      };
+   }
+
+   // Called on initialization and Location switch.
+   componentWillReceiveProps(nextProps) {
+     // TODO gotta set those COOOOOLDOOOOOOOWNS
+     this.setState({currentText: nextProps.readyText});
    }
 
    render() {
