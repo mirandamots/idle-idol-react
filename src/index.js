@@ -60,6 +60,8 @@ class Screen extends React.Component {
  *    too...
  */
 
+ const LOCATIONS = require('./actions.json');
+
 /*
  * Main class.
  */
@@ -68,22 +70,36 @@ class Game extends React.Component {
   constructor() {
     super();
 
-    var lastClicked = { }
+    var remainingActionCooldowns = { }
 
     for(var loc in LOCATIONS) {
       for(var action in LOCATIONS[loc]["actions"]) {
-        lastClicked[action] = new Date(0); // infinity ago
+        remainingActionCooldowns[action] = 0;
       }
     }
 
-    console.log(lastClicked);
+    var intervalId = setInterval(this.update.bind(this), 1000);
 
     this.state = {
       money: 0,
       starPoints: 0,
       currentLocation: 'Home',
-      lastClicked: lastClicked
+      remainingActionCooldowns: remainingActionCooldowns
     };
+  }
+
+  update() {
+    // update available actions
+
+    // update remaining action cooldowns
+    var newActionCooldowns = {}
+    for(var action in Object.keys(this.state.remainingActionCooldowns)) {
+      if(this.state.remainingActionCooldowns[action] > 0) {
+        newActionCooldowns[action] = this.state.remainingActionCooldowns[action] - 1;
+      }
+    }
+
+    this.setState({remainingActionCooldowns: newActionCooldowns});
   }
 
   handleClick(effects) {
@@ -102,7 +118,7 @@ class Game extends React.Component {
   // Lifting state up so Actions will affect things like money and SP.
   renderLocation(location) {
     return (
-      <Location name={location} actions={this.state.actions[location]}
+      <Location name={location} actions={LOCATIONS[location]}
       handleClick={(effects) => this.handleClick(effects)} />
     )
   }
@@ -178,7 +194,7 @@ class Location extends React.Component {
          <Row className="location-content">
            <Col className="action-list" lg={5} md={5}>
              <ButtonGroup vertical block>
-             {Object.values(this.state.actions).map((action) =>
+             {Object.values(this.props.actions).map((action) =>
                this.renderAction(action))
              }
              </ButtonGroup>
@@ -210,11 +226,11 @@ class Location extends React.Component {
      };
    }
 
-   // Called on initialization and Location switch.
-   componentWillReceiveProps(nextProps) {
-     // TODO gotta set those COOOOOLDOOOOOOOWNS
-     this.setState({currentText: nextProps.readyText});
-   }
+  //  // Called on initialization and Location switch.
+  //  componentWillReceiveProps(nextProps) {
+  //    // TODO gotta set those COOOOOLDOOOOOOOWNS
+  //    this.setState({currentText: nextProps.readyText});
+  //  }
 
    render() {
      return (
